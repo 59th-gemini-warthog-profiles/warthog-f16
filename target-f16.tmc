@@ -1,0 +1,200 @@
+include "target.tmh" //default Thrustmaster function
+
+int Eject ;
+int Jettison ;
+int Chainled ;
+
+int main() 
+{ 
+
+Configure(&LMFD,MODE_EXCLUDED); 
+Configure(&RMFD,MODE_EXCLUDED);
+Configure(&HCougar,MODE_EXCLUDED);
+Configure(&T16000,MODE_EXCLUDED);
+Configure(&T16000L,MODE_EXCLUDED);
+Configure(&TFRPRudder,MODE_EXCLUDED);
+
+if(Init(&EventHandle)) return 1; //event handler
+ 
+//shift button
+SetShiftButton(&Joystick,S4);
+
+//set pulse and delay lengths
+SetKBRate(80,100);
+
+//LED init state
+ActKey(PULSE+KEYON+LED(&Throttle, LED_INTENSITY, 214)); //set Throttle backlight power to 5/6
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED0)); //set backlight OFF
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED1)); //set LED 1 OFF
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED2)); //set LED 2 OFF
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED3)); //set LED 3 OFF
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED4)); //set LED 4 OFF
+ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED5)); //set LED 5 OFF
+
+/////////////////////////////////////////
+//Joystick and Throttle Axis Definitions/
+/////////////////////////////////////////
+MapAxis(&Joystick, JOYX, DX_X_AXIS); 
+MapAxis(&Joystick, JOYY, DX_Y_AXIS); 
+MapAxis(&Throttle, THR_LEFT, DX_ZROT_AXIS); 
+MapAxis(&Throttle, THR_RIGHT, DX_Z_AXIS); 
+
+//Shift slew to mouse with S4, Shift slider axe to mouse wheel with S4
+MapKey(&Joystick, S4, EXEC("MapAxis(&Throttle,SCX,MOUSE_X_AXIS,AXIS_NORMAL,MAP_RELATIVE);"
+"SetSCurve(&Throttle, SCX, 0, 10, 0, 0, -5);"
+"MapAxis(&Throttle, SCY, MOUSE_Y_AXIS, AXIS_NORMAL, MAP_RELATIVE);"
+"SetSCurve(&Throttle, SCY, 0, 10, 0, 0, -5);"
+"MapAxis(&Throttle, THR_FC, DX_THROTTLE_AXIS);"
+));
+
+MapKeyR(&Joystick, S4, EXEC("MapAxis(&Throttle, SCX, DX_XROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);"
+"SetSCurve(&Throttle, SCX, 0, 0, 0, 0, 0);"
+"MapAxis(&Throttle, SCY, DX_YROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);"
+"SetSCurve(&Throttle, SCY, 0, 0, 0, 0, 0);"
+"MapAxis(&Throttle, THR_FC, DX_SLIDER_AXIS);"
+));
+   
+//Slew
+MapAxis(&Throttle, SCX, DX_XROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
+SetSCurve(&Throttle, SCX, 0, 0, 0, 0, 0);
+MapAxis(&Throttle, SCY, DX_YROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
+SetSCurve(&Throttle, SCY, 0, 0, 0, 0, 0);
+
+//Slew click
+//MapKeyIO(&Throttle,SC,MOUSE_LEFT,USB[0x5D]); //mouse click, usb code 'num5' for trackir center
+
+//Free assign to throttle friction lever in DCS
+MapAxis(&Throttle, THR_FC, DX_SLIDER_AXIS);
+
+printf("   \xa");
+printf(" --------[ JTFF Gemini F16C Profile 0.1.0 ]-------- \xa");
+printf("   \xa");
+
+//////////////////////////////
+//Joystick Button Definitions/
+//////////////////////////////
+
+
+MapKeyIO(&Joystick,TG1,L_CTL+USB[0x04],DX1); //L_CTL+'a' AB Detent, DX1
+MapKey(&Joystick,TG2,DX6); // DX6
+MapKeyIO(&Joystick,S1,L_CTL+USB[0x13],USB[0x16]); //PADLE Depress , NWS
+MapKeyIO(&Joystick,S2,USB[0x06],DX2); //CAGE-UNCAGE, DX2 WPN RELEASE
+MapKey(&Joystick,S3,DX3); //EXPAND-FOV
+
+//trim
+MapKeyIO(&Joystick,H1U,USB[0x52],R_CTL+USB[0x33]); // DED UP, trim UP
+MapKeyIO(&Joystick,H1D,USB[0x51],R_CTL+USB[0x37]); // DED DOWN, trim DOWN
+MapKeyIO(&Joystick,H1L,USB[0x50],R_CTL+USB[0x36]); // DED LEFT, trim LEFT
+MapKeyIO(&Joystick,H1R,USB[0x4F],R_CTL+USB[0x38]); // DED RIGHT, trim RIGHT
+
+//tms
+MapKeyIO(&Joystick,H2U,USB[0x54],DX7); //ZOOM - , TMS UP
+MapKeyIO(&Joystick,H2D,USB[0x55],DX9); //ZOOM + , TMS DOWN
+MapKeyIO(&Joystick,H2L,TEMPO(0,L_ALT+USB[0x18],500),DX10); //FREE usb code '' -LONG PRESS: HMCS - , TMS LEFT
+MapKeyIO(&Joystick,H2R,TEMPO(0,R_ALT+USB[0x18],500),DX8); //FREE usb code '' -LONG PRESS: HMCS + , TMS RIGHT
+
+//dms
+MapKeyIO(&Joystick,H3U,USB[0x33],DX11); //TDC up usb code ';', DMS UP 
+MapKeyIO(&Joystick,H3D,USB[0x37],DX13); //TDC down usb code '.', DMS DOWN 
+MapKeyIO(&Joystick,H3L,USB[0x36],DX14); //TDC left usb code ',', DMS LEFT 
+MapKeyIO(&Joystick,H3R,USB[0x38],DX12); //TDC right usb code '/'', DMS RIGHT 
+
+//cms
+MapKeyIO(&Joystick,H4U,CHAIN(R_ALT+USB[0x09],R_ALT+USB[0x0A]),DX15); //FLOOD LIGHTS + , CMS FWD
+MapKeyIO(&Joystick,H4D,CHAIN(L_ALT+USB[0x09],L_ALT+USB[0x0A]),DX17); //FLOOD  LIGHTS - , CMS AFT
+MapKeyIO(&Joystick,H4L,CHAIN(R_ALT+USB[0x07],R_ALT+USB[0x16],R_ALT+USB[0x04]),DX18); //PNL LIGHTS , CMS LEFT
+MapKeyIO(&Joystick,H4R,CHAIN(L_ALT+USB[0x07],L_ALT+USB[0x16],L_ALT+USB[0x04]),DX16); //PNL LIGHTS , CMS RIGHT
+MapKey(&Joystick,H4P,DX19); // CMS PRESS
+
+
+//////////////////////////////
+//Throttle Button Definitions/
+//////////////////////////////
+
+//Functions definitions
+
+Eject = CHAIN(PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT^LED0),PULSE+L_CTL+USB[0x08]); //Chain needed for the ejection sequence on button "LDGH"
+
+//MIC
+MapKeyIO(&Throttle,MSU,0,L_CTL+USB[0x55]); //FREE, SRS-1
+MapKeyIO(&Throttle,MSD,R_SHIFT+USB[0x0B],L_SHIFT+USB[0x55]); //nightvision on/off ,SRS-2
+MapKeyIO(&Throttle,MSL,R_CTL+R_SHIFT+USB[0x0B],R_ALT+USB[0x31]); //nightvision + usb code 'h', COMM MENU UHF
+MapKeyIO(&Throttle,MSR,R_ALT+R_SHIFT+USB[0x0B],R_CTL+USB[0x31]); //nightvision - usb code 'h', COMM MENU VHF
+MapKeyIO(&Throttle,MSP,0,0); // FREE , FREE
+
+//speedbrake
+MapKey(&Throttle,SPDB,L_SHIFT+USB[0x05]); //DEPLOY AIRBRAKE
+MapKey(&Throttle,SPDM,0); // 
+MapKey(&Throttle,SPDF,L_CTL+USB[0x05]); //RETRACT AIRBRAKE
+
+//Boat switch
+MapKey(&Throttle,BSB,PULSE+USB[0x21]);//MISSILE OVERRIDE usb code '4'
+MapKey(&Throttle,BSM,PULSE+USB[0x26]);//CENTER usb code '9'
+MapKey(&Throttle,BSF,PULSE+USB[0x20]);//DOGFIGHT usb code '3'
+
+//China hat
+MapKeyIO(&Throttle,CHB,L_ALT+USB[0x15],L_CTL+L_ALT+USB[0x09]);//MAN RNG - CCW, CHAFF/FLARE DISPENSE 
+MapKeyIO(&Throttle,CHF,R_ALT+USB[0x15],DX15);//MAN RNG - CW, CMS FWD 
+
+
+//Pinkie
+MapKey(&Throttle,PSB,PULSE+L_CTL+L_ALT+USB[0x0F]); //EXT LIGHTS MASTER ALL COVER
+MapKey(&Throttle,PSM,CHAIN(PULSE+R_CTL+R_ALT+USB[0x0F],D(),PULSE+L_SHIFT+USB[0x21])); //EXT LIGHTS MASTER FORM COVER
+MapKey(&Throttle,PSF,CHAIN(PULSE+R_CTL+L_CTL+USB[0x0F],D(),PULSE+L_SHIFT+USB[0x21])); //EXT LIGHTS MASTER NORM
+
+//Left ap button
+MapKeyIO(&Throttle,LTB,TEMPO(R_SHIFT+USB[0x0F],0,500),TEMPO(L_ALT+USB[0x10],R_ALT+USB[0x10],500)); //LASER ARM/OFF, MASTER ARM ON - LONG PRESS:MASTER ARM OFF
+
+//Coolie
+MapKeyIO(&Throttle,CSU,USB[0x2E],PULSE+USB[0x2F]);//ANT ELEV - CW , Kneeboard  previous 
+MapKeyIO(&Throttle,CSD,USB[0x2D],PULSE+USB[0x30]);//ANT ELEV - CCW , Kneeboard next
+MapKeyIO(&Throttle,CSL,DX18,0); //CMS LEFT, FREE
+MapKeyIO(&Throttle,CSR,DX16,PULSE+R_SHIFT+USB[0x0E]); //CMS RIGHT,Kneeboard on/off
+
+//base
+MapKeyIO(&Throttle,EFLNORM,0,CHAIN(PULSE+L_SHIFT+USB[0x0F],D(),PULSE+L_SHIFT+USB[0x0E],D(),PULSE+L_SHIFT+USB[0x0B],D(),PULSE+L_SHIFT+USB[0x17],D(),PULSE+L_SHIFT+USB[0x18],D(),PULSE+L_SHIFT+L_CTL+USB[0x19],D(),PULSE+L_SHIFT+USB[0x1A])); //MMC-STSTA-MFD-UFC-GPS-DL-MIDS ON usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
+MapKeyIO(&Throttle,EFLOVER,0,CHAIN(PULSE+L_CTL+USB[0x0F],D(),PULSE+L_CTL+USB[0x0E],D(),PULSE+L_CTL+USB[0x0B],D(),PULSE+L_CTL+USB[0x17],D(),PULSE+L_CTL+USB[0x18],D(),PULSE+L_CTL+USB[0x19],D(),PULSE+L_CTL+USB[0x1A])); //MMC-STSTA-MFD-UFC-GPS-DL-MIDS OFF usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
+
+MapKeyIO(&Throttle,EFRNORM,0,CHAIN(PULSE+R_SHIFT+USB[0x08],D(),PULSE+R_SHIFT+USB[0x07],D(),PULSE+R_SHIFT+USB[0x06])); //HDPT-FCR-RDRALT ON usb code 'e' 'd' 'c'
+MapKeyIO(&Throttle,EFROVER,0,CHAIN(PULSE+R_CTL+USB[0x08],D(),PULSE+R_CTL+USB[0x07],D(),PULSE+R_CTL+USB[0x06])); //HDPT-FCR-RDRALT ON usb code 'e' 'd' 'c'
+
+MapKeyIO(&Throttle,EOLMOTOR,0,0); //FREE
+MapKeyIO(&Throttle,EOLNORM,0,0); //FREE
+MapKeyIO(&Throttle,EOLIGN,0,USB[0x1F]); //FREE, A-G Mode
+
+MapKeyIO(&Throttle,EORMOTOR,0,0); //FREE
+MapKeyIO(&Throttle,EORNORM,0,0); //FREE
+MapKeyIO(&Throttle,EORIGN,0,USB[0x1E]); //FREE, A-A Mode
+
+MapKeyIO(&Throttle,APUON,0,PULSE+L_CTL+L_ALT+USB[0x0B]); //PROBE HEAT ON
+MapKeyIO(&Throttle,APUOFF,0,PULSE+R_CTL+R_ALT+USB[0x0B]); //PROBE HEAT OFF
+
+MapKeyIO(&Throttle,LDGH,L_CTL+L_SHIFT+USB[0x18],L_ALT+L_CTL+USB[0x19]); //FLCS BIT, RESET MASTER WARNING
+
+MapKey(&Throttle,FLAPU,CHAIN(PULSE+L_CTL+L_ALT++USB[0x13],D(),PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT+LED1))); //MAIN PWR MAIN -- LED1 ON
+MapKey(&Throttle,FLAPM,CHAIN(PULSE+R_SHIFT+USB[0x05],D(),PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT+LED1))); //MAIN PWR BATT -- LED1 ON
+MapKey(&Throttle,FLAPD,CHAIN(PULSE+L_CTL+USB[0x07],D(),PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT-LED1))); //MAIN PWR OFF -- LED1 OFF
+
+MapKeyIO(&Throttle,EACON,0,CHAIN(PULSE+L_CTL+USB[0x0A],D(),PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT-LED2))); //GEAR UP -- LED2 OFF
+MapKeyIO(&Throttle,EACOFF,0,CHAIN(PULSE+L_SHIFT+USB[0x0A],D(),PULSE+LED(&Throttle,LED_ONOFF,LED_CURRENT+LED2))); //GEAR DOWN -- LED2 ON
+
+MapKeyIO(&Throttle,RDRNRM,0,PULSE+R_CTL+R_ALT+USB[0x15]); //FREE , RF NORM
+MapKeyIO(&Throttle,RDRDIS,PULSE+L_SHIFT+USB[0x1F],PULSE+R_SHIFT+R_ALT+USB[0x15]); //START2 , RF QUIET
+
+MapKeyIO(&Throttle,APENG,0,L_CTL+L_SHIFT+L_ALT+USB[0x15]); //FREE, AIR REFUEL OPEN/CLOSE
+
+MapKeyIO(&Throttle,APPAT,0,PULSE+L_CTL+L_SHIFT+USB[0x04]); //AP Pitch ALT HOLD
+MapKeyIO(&Throttle,APAH,0,PULSE+R_SHIFT+R_CTL+USB[0x04]); //AP Pitch OFF
+MapKeyIO(&Throttle,APALT,0,PULSE+L_SHIFT+R_SHIFT+USB[0x04]); //AP Pitch ATT Hold
+
+MapKey(&Throttle,IDLELON,CHAIN(PULSE+R_SHIFT+USB[0x4D],D(),LED(&Throttle,LED_ONOFF,LED_CURRENT-LED0))); //IDLE->OFF ENGINE DETENT BACKLIGHT OFF
+MapKey(&Throttle,IDLELOFF,CHAIN(LED(&Throttle,LED_ONOFF,LED_CURRENT+LED0),D(),PULSE+R_SHIFT+USB[0x4A])); //OFF->IDLE  ENGINE DETENT BACKLIGHT ON
+MapKey(&Throttle,IDLERON,CHAIN(PULSE+R_SHIFT+USB[0x4D],D(),LED(&Throttle,LED_ONOFF,LED_CURRENT-LED0))); //IDLE->OFF ENGINE DETENTP BACKLIGHT OFF
+MapKey(&Throttle,IDLEROFF,CHAIN(LED(&Throttle,LED_ONOFF,LED_CURRENT+LED0),D(),PULSE+R_SHIFT+USB[0x4A])); //OFF->IDLE ENGINE DETENT BACKLIGHT ON
+
+} 
+ 
+int EventHandle(int type, alias o, int x) 
+{ 
+DefaultMapping(&o, x); 
+}
