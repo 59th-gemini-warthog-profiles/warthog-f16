@@ -67,7 +67,7 @@ SetSCurve(&Throttle, SCY, 0, 0, 0, 0, 0);
 MapAxis(&Throttle, THR_FC, DX_SLIDER_AXIS);
 
 printf("   \xa");
-printf(" --------[ JTFF Gemini F16C Profile 0.3.0-snapshot ]-------- \xa");
+printf(" --------[ JTFF Gemini F16C Profile 0.3.0 ]-------- \xa");
 printf("   \xa");
 
 //////////////////////////////
@@ -152,19 +152,19 @@ MapKeyIO(&Throttle,CSL,R_ALT+USB[0x56],0); //HDG Set KNOB CCW, FREE
 MapKeyIO(&Throttle,CSR,R_ALT+USB[0x57],PULSE+R_SHIFT+USB[0x0E]); //HDG Set KNOB CW,Kneeboard on/off
 
 //base
-MapKeyIO(&Throttle,EFLNORM,0,CHAIN(PULSE+L_SHIFT+USB[0x0F],D(),PULSE+L_SHIFT+USB[0x0E],D(),PULSE+L_SHIFT+USB[0x0B],D(),PULSE+L_SHIFT+USB[0x17],D(),PULSE+L_SHIFT+USB[0x18],D(),PULSE+L_SHIFT+L_CTL+USB[0x19],D(),PULSE+L_SHIFT+USB[0x1A])); //MMC-STSTA-MFD-UFC-GPS-DL-MIDS ON usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
-MapKeyIO(&Throttle,EFLOVER,0,CHAIN(PULSE+L_CTL+USB[0x0F],D(),PULSE+L_CTL+USB[0x0E],D(),PULSE+L_CTL+USB[0x0B],D(),PULSE+L_CTL+USB[0x17],D(),PULSE+L_CTL+USB[0x18],D(),PULSE+L_CTL+USB[0x19],D(),PULSE+L_CTL+USB[0x1A])); //MMC-STSTA-MFD-UFC-GPS-DL-MIDS OFF usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
+MapKeyIO(&Throttle,EFLNORM,0,0); //FREE
+MapKeyIO(&Throttle,EFLOVER,0,0); //FREE
 
-MapKeyIO(&Throttle,EFRNORM,0,CHAIN(PULSE+R_SHIFT+USB[0x08],D(),PULSE+R_SHIFT+USB[0x07],D(),PULSE+R_SHIFT+USB[0x06])); //HDPT-FCR-RDRALT ON usb code 'e' 'd' 'c'
-MapKeyIO(&Throttle,EFROVER,0,CHAIN(PULSE+R_CTL+USB[0x08],D(),PULSE+R_CTL+USB[0x07],D(),PULSE+R_CTL+USB[0x06])); //HDPT-FCR-RDRALT ON usb code 'e' 'd' 'c'
+MapKey(&Throttle,EFRNORM,PULSE+L_ALT+L_CTL+USB[0x1E]); //CAT 1
+MapKey(&Throttle,EFROVER,PULSE+L_ALT+L_CTL+USB[0x20]); //CAT 3
 
-MapKeyIO(&Throttle,EOLMOTOR,0,0); //FREE
-MapKeyIO(&Throttle,EOLNORM,0,0); //FREE
 MapKeyIO(&Throttle,EOLIGN,0,USB[0x1F]); //FREE, A-G Mode
+MapKeyIO(&Throttle,EOLNORM,0,CHAIN(PULSE+L_SHIFT+USB[0x0F],D(),PULSE+L_SHIFT+USB[0x0E],D(),PULSE+L_SHIFT+USB[0x0B],D(),PULSE+L_SHIFT+USB[0x17],D(),PULSE+L_SHIFT+USB[0x18],D(),PULSE+L_SHIFT+L_CTL+USB[0x19],D(),PULSE+L_SHIFT+USB[0x1A])); //FREE, MMC-STSTA-MFD-UFC-GPS-DL-MIDS ON usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
+MapKeyIO(&Throttle,EOLMOTOR,0,CHAIN(PULSE+L_CTL+USB[0x0F],D(),PULSE+L_CTL+USB[0x0E],D(),PULSE+L_CTL+USB[0x0B],D(),PULSE+L_CTL+USB[0x17],D(),PULSE+L_CTL+USB[0x18],D(),PULSE+L_CTL+USB[0x19],D(),PULSE+L_CTL+USB[0x1A])); //FREE, MMC-STSTA-MFD-UFC-GPS-DL-MIDS OFF usb code 'l' 'k' 'h' 't' 'u' 'v' 'w'
 
-MapKeyIO(&Throttle,EORMOTOR,0,0); //FREE
-MapKeyIO(&Throttle,EORNORM,0,0); //FREE
 MapKeyIO(&Throttle,EORIGN,0,USB[0x1E]); //FREE, A-A Mode
+MapKeyIO(&Throttle,EORNORM,0,CHAIN(PULSE+R_SHIFT+USB[0x08],D(),PULSE+R_SHIFT+USB[0x07],D(),PULSE+R_SHIFT+USB[0x06])); //FREE, HDPT-FCR-RDRALT ON usb code 'e' 'd' 'c'
+MapKeyIO(&Throttle,EORMOTOR,0,CHAIN(PULSE+R_CTL+USB[0x08],D(),PULSE+R_CTL+USB[0x07],D(),PULSE+R_CTL+USB[0x06])); //FREE, HDPT-FCR-RDRALT OFF usb code 'e' 'd' 'c'
 
 MapKeyIO(&Throttle,APUON,0,PULSE+L_CTL+L_ALT+USB[0x0B]); //PROBE HEAT ON
 MapKeyIO(&Throttle,APUOFF,0,PULSE+R_CTL+R_ALT+USB[0x0B]); //PROBE HEAT OFF
