@@ -67,7 +67,7 @@ SetSCurve(&Throttle, SCY, 0, 0, 0, 0, 0);
 MapAxis(&Throttle, THR_FC, DX_SLIDER_AXIS);
 
 printf("   \xa");
-printf(" --------[ JTFF Gemini F16C Profile 0.3.0 ]-------- \xa");
+printf(" --------[ JTFF Gemini F16C Profile 0.4.0-snapshot ]-------- \xa");
 printf("   \xa");
 
 //////////////////////////////
