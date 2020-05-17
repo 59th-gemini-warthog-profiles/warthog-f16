@@ -591,6 +591,30 @@ local diff = {
 			},
 			["name"] = "CHAFF/FLARE Dispense Button",
 		},
+		["d3011pnilunilcd2vd0vpnilvunil"] = {
+			["added"] = {
+				[1] = {
+					["key"] = "3",
+					["reformers"] = {
+						[1] = "LAlt",
+						[2] = "LCtrl",
+					},
+				},
+			},
+			["name"] = "STORES CONFIG Switch - CAT III",
+		},
+		["d3011pnilunilcd2vd1vpnilvunil"] = {
+			["added"] = {
+				[1] = {
+					["key"] = "1",
+					["reformers"] = {
+						[1] = "LAlt",
+						[2] = "LCtrl",
+					},
+				},
+			},
+			["name"] = "STORES CONFIG Switch - CAT I",
+		},
 		["d3014pnilunilcd19vd0vpnilvunil"] = {
 			["added"] = {
 				[1] = {
